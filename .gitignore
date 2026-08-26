@@ -1,0 +1,12 @@
+venv/
+env/
+.env
+*.db
+*.sqlite
+*.sqlite3
+__pycache__/
+*.pyc
+.vscode/*
+!.vscode/settings.json
+.DS_Store
+Thumbs.db
