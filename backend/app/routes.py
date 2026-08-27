@@ -174,21 +174,21 @@ def delete_device(id_device):
 def get_risk_factors():
     factors = RiskFactor.query.all()
     return jsonify(
-        [{"id_factor": f.id_factor, "name": f.name, "dimension": f.dimension} for f in factors]
+        [{"id_factor": f.id_factor, "name": f.name} for f in factors]
     )
 
 
 @main.route("/api/risk-factors", methods=["POST"])
 def create_risk_factor():
     data = request.get_json()
-    if not data or "name" not in data or "dimension" not in data:
-        return jsonify({"error": "Champs requis : name, dimension"}), 400
+    if not data or "name" not in data:
+        return jsonify({"error": "Champs requis : name"}), 400
 
-    nouveau = RiskFactor(name=data["name"], dimension=data["dimension"])
+    nouveau = RiskFactor(name=data["name"])
     db.session.add(nouveau)
     db.session.commit()
     return jsonify(
-        {"id_factor": nouveau.id_factor, "name": nouveau.name, "dimension": nouveau.dimension}
+        {"id_factor": nouveau.id_factor, "name": nouveau.name}
     ), 201
 
 

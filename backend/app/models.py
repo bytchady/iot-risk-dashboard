@@ -11,7 +11,6 @@ class RiskFactor(db.Model):
 
     id_factor = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     name = db.Column(db.String(50))
-    dimension = db.Column(db.String(50))
 
     def __repr__(self):
         return f"<RiskFactor {self.name}>"
