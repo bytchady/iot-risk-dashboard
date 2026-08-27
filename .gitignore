@@ -1,12 +1,31 @@
-venv/
-env/
+# Python
+**/__pycache__/
+**/*.py[cod]
+**/venv/
+**/.venv/
+
+# Environment variables
 .env
-*.db
-*.sqlite
-*.sqlite3
-__pycache__/
-*.pyc
-.vscode/*
-!.vscode/settings.json
+.env.*
+!.env.example
+
+# Database
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+
+# Angular
+**/node_modules/
+**/dist/
+**/.angular/
+**/coverage/
+
+# VS Code
+.vscode/
+
+# Docker
+*.log
+
+# OS
 .DS_Store
 Thumbs.db

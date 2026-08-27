@@ -1,9 +1,27 @@
 services:
-  web:
-    build: .
+
+  backend:
+    build:
+      context: ./backend
+    container_name: dashboard-backend
     ports:
       - "5000:5000"
-    volumes:
-      - .:/app
     env_file:
-      - .env
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+      - sqlite_data:/app/instance
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend/Angular
+    container_name: dashboard-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  sqlite_data:
