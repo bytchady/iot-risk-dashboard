@@ -1,7 +1,6 @@
 from datetime import datetime
-
 from flask import Blueprint, jsonify, request
-
+from app.services.risk_scoring import compute_device_risk, IncompleteScoringDataError
 from app import db
 from app.models import (
     Device,
@@ -166,6 +165,68 @@ def delete_device(id_device):
     db.session.delete(device)
     db.session.commit()
     return jsonify({"message": "Appareil supprimé"}), 200
+
+@main.route("/api/devices/<id_device>/risk-score", methods=["GET"])
+def get_device_risk_score(id_device):
+    device = Device.query.get(id_device)
+    if device is None:
+        return jsonify({"error": "Device not found"}), 404
+
+    try:
+        raw, normalized, classification = compute_device_risk(id_device)
+    except IncompleteScoringDataError as e:
+        return jsonify({"error": str(e)}), 422
+
+    return jsonify({
+        "id_device": id_device,
+        "raw_score": round(raw, 2),
+        "normalized_score": round(normalized, 2),
+        "classification": {
+            "label": classification.label,
+            "color": classification.color
+        }
+    })
+
+
+@main.route("/api/devices/<id_device>/risk-score", methods=["POST"])
+def save_device_risk_score(id_device):
+    device = Device.query.get(id_device)
+    if device is None:
+        return jsonify({"error": "Device not found"}), 404
+
+    try:
+        raw, normalized, classification = compute_device_risk(id_device)
+    except IncompleteScoringDataError as e:
+        return jsonify({"error": str(e)}), 422
+
+    history_entry = RiskScoreHistory(
+        id_device=id_device,
+        raw_score=raw,
+        normalized_score=normalized,
+        id_classification=classification.id_classification
+    )
+    db.session.add(history_entry)
+    db.session.commit()
+
+    return jsonify({
+        "id_device": id_device,
+        "raw_score": round(raw, 2),
+        "normalized_score": round(normalized, 2),
+        "classification": {"label": classification.label, "color": classification.color}
+    }), 201
+
+@main.route("/api/devices/<id_device>/risk-score/history", methods=["GET"])
+def get_device_risk_history(id_device):
+    entries = RiskScoreHistory.query.filter_by(id_device=id_device).order_by(RiskScoreHistory.computed_at.desc()).all()
+    return jsonify([
+        {
+            "raw_score": round(e.raw_score, 2),
+            "normalized_score": round(e.normalized_score, 2),
+            "classification": e.classification.label,
+            "computed_at": e.computed_at.isoformat()
+        }
+        for e in entries
+    ])
 
 
 # ---------- RISK FACTORS ----------
