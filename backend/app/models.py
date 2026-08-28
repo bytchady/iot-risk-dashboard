@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime, timezone
 from app import db
 
 
@@ -62,7 +63,7 @@ class Device(db.Model):
 
     id_device = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     name = db.Column(db.String(50))
-    created_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     id_device_type = db.Column(
         db.String(36), db.ForeignKey("DEVICE_TYPE.id_device_type"), nullable=False
     )
@@ -80,7 +81,7 @@ class DeviceFactorScore(db.Model):
 
     id_device_factore_score = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     rating = db.Column(db.Integer)
-    rated_at = db.Column(db.DateTime)
+    rated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     id_device = db.Column(db.String(36), db.ForeignKey("DEVICE.id_device"), nullable=False)
     id_factor = db.Column(
         db.String(36), db.ForeignKey("RISK_FACTOR.id_factor"), nullable=False
@@ -98,7 +99,7 @@ class RiskScoreHistory(db.Model):
     id_history = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     raw_score = db.Column(db.Numeric(15, 2))
     normalized_score = db.Column(db.Numeric(15, 2))
-    computed_at = db.Column(db.DateTime)
+    computed_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     id_device = db.Column(db.String(36), db.ForeignKey("DEVICE.id_device"), nullable=False)
     id_classification = db.Column(
         db.String(36), db.ForeignKey("RISK_CLASSIFICATION.id_classification"), nullable=False
@@ -114,7 +115,7 @@ class DeviceDataSample(db.Model):
     __tablename__ = "DEVICE_DATA_SAMPLE"
 
     id_sample = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    captured_at = db.Column(db.DateTime)
+    captured_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     data_value = db.Column(db.String(50))
     id_device = db.Column(db.String(36), db.ForeignKey("DEVICE.id_device"), nullable=False)
 
