@@ -46,8 +46,8 @@ class DeviceType(db.Model):
     __tablename__ = "DEVICE_TYPE"
 
     id_device_type = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    primary_data_collected = db.Column(db.String(50))
     name = db.Column(db.String(50))
+    primary_data_collected = db.Column(db.String(50))
     id_subsystem = db.Column(
         db.String(36), db.ForeignKey("BMS_SUBSYSTEM.id_subsystem"), nullable=False
     )

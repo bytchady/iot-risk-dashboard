@@ -1,0 +1,37 @@
+@if (loading) {
+  <p>Chargement...</p>
+} @else if (error) {
+  <p class="error">{{ error }}</p>
+} @else {
+  <p-table
+    [value]="devicesWithRisk"
+    [tableStyle]="{ 'min-width': '40rem' }"
+  >
+    <ng-template #header>
+      <tr>
+        <th>Nom</th>
+        <th>Score</th>
+        <th>Niveau de risque</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-item>
+      <tr>
+        <td>{{ item.device.name }}</td>
+
+        @if (item.risk) {
+          <td>{{ item.risk.normalized_score }}</td>
+          <td>
+            <p-tag
+              [value]="item.risk.classification.label"
+              [severity]="getSeverity(item.risk.classification.label)"
+            />
+          </td>
+        } @else {
+          <td colspan="2">Score non disponible</td>
+        }
+      </tr>
+    </ng-template>
+  </p-table>
+}
+
